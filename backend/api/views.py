@@ -89,12 +89,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
         x_position, y_position = 50, 800
         shopping_cart = (IngredientInRecipe.objects.filter(
-            recipe__shopping_list__user=request.user
-                ).values(
-                'ingredient__name',
-                'ingredient__measurement_unit',
-                    ).annotate(amount=Sum('amount')).order_by()
-                        )
+            recipe__shopping_list__user=request.user).values(
+            'ingredient__name',
+            'ingredient__measurement_unit',).annotate(
+            amount=Sum('amount')).order_by()
+            )
         if shopping_cart:
             indent = 20
             page.setFont("Arial", 24)
