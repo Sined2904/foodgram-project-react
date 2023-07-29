@@ -3,17 +3,16 @@ from users.models import User
 from django.core.validators import RegexValidator
 
 
-class Tag(models.Model): 
+class Tag(models.Model):
     '''Модель тегов.'''
-    name = models.CharField(max_length=200, null=False )
+    name = models.CharField(max_length=200, null=False)
     color = models.CharField(max_length=7, null=False, unique=True,
-                            validators=[ RegexValidator(
+                             validators=[RegexValidator(
                                 regex=r'^#([A-Fa-f0-9]{3,6})$',
                                 message='Введите название цвета в формате HEX!'
-            )
-        ])
+                                )])
     slug = models.CharField(max_length=200, null=False, unique=True)
-    
+
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
@@ -24,9 +23,11 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     '''Модель ингредиентов.'''
-    name = models.CharField(verbose_name='Название ингредиента', max_length=200)
-    measurement_unit = models.CharField(verbose_name='Единицы измерения', max_length=200)
-    
+    name = models.CharField(verbose_name='Название ингредиента',
+                            max_length=200)
+    measurement_unit = models.CharField(verbose_name='Единицы измерения',
+                                        max_length=200)
+
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
@@ -35,7 +36,7 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Recipe(models.Model):#ПРОВЕРЕНО
+class Recipe(models.Model):
     '''Рецепты.'''
     author = models.ForeignKey(
         User,
@@ -47,13 +48,9 @@ class Recipe(models.Model):#ПРОВЕРЕНО
     image = models.ImageField(
         upload_to='recipe/', null=True, blank=True)
     text = models.TextField(verbose_name='Описание рецепта')
-    #ingredients = models.ManyToManyField(
-    #    Ingredient,
-    #   through='ingredientinrecipe'
-    #)
     tags = models.ManyToManyField(Tag)
-    cooking_time = models.PositiveIntegerField('Время приготовления')#добавить валидацию на минимальное значение
-    
+    cooking_time = models.PositiveIntegerField('Время приготовления')
+
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -98,6 +95,7 @@ class Favourites(models.Model):
         related_name='followers',
         verbose_name='Рецепт в избранном',
     )
+
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
@@ -116,10 +114,10 @@ class Shopping_list(models.Model):
         Recipe,
         on_delete=models.CASCADE
     )
+
     class Meta:
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
 
     def __str__(self):
         return f'Список покупок пользователя {self.user}'
-

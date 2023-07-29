@@ -1,11 +1,10 @@
 import io
-import math
 
 from django.db.models.aggregates import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
+from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
                             Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -22,7 +21,7 @@ from .permissions import IsAdminOrReadOnly, IsAuthororAdmin
 from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
-                          TagSerializer, UserSerializer)
+                          TagSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -75,13 +74,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
         if self.action == 'create':
-            return CreateRecipeSerializer 
+            return CreateRecipeSerializer
         return RecipeSerializer
 
     def perform_create(self, serializer):
         '''Добавление автора рецепта, пользователя который сделал запрос.'''
         serializer.save(author=self.request.user)
-
 
     @action(detail=False)
     def download_shopping_cart(self, request):
@@ -91,11 +89,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
         x_position, y_position = 50, 800
         shopping_cart = (
-            IngredientInRecipe.objects.filter(recipe__shopping_list__user=request.user).
-            values(
-                'ingredient__name',
-                'ingredient__measurement_unit',
-            ).annotate(amount=Sum('amount')).order_by())
+            IngredientInRecipe.objects.filter(
+                recipe__shopping_list__user=request.user).values(
+                    'ingredient__name',
+                    'ingredient__measurement_unit',
+                    ).annotate(amount=Sum('amount')).order_by())
         if shopping_cart:
             indent = 20
             page.setFont("Arial", 24)
@@ -122,7 +120,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'Cписок покупок пуст!')
         page.save()
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename='Shopping_cart.pdf')
+        return FileResponse(
+            buffer, as_attachment=True, filename='Shopping_cart.pdf')
 
 
 class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
@@ -138,16 +137,19 @@ class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
 
     def get_queryset(self):
         '''Проверка наличие подписки.'''
-        follow = Follow.objects.filter(user = self.request.user, author = self.get_object()).exists()
+        follow = Follow.objects.filter(
+            user=self.request.user, author=self.get_object()).exists()
         return follow
 
     def create(self, request, *args, **kwargs):
         '''Создание подписки.'''
         user_author = self.get_object()
         if request.user.id == user_author.id:
-            return Response('Нельзя подписаться на самого себя!', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Нельзя подписаться на самого себя!',
+                            status=status.HTTP_400_BAD_REQUEST)
         if request.user.follower.filter(author=user_author).exists():
-            return Response('Нельзя подписаться дважды!', status=status.HTTP_400_BAD_REQUEST)
+            return Response('Нельзя подписаться дважды!',
+                            status=status.HTTP_400_BAD_REQUEST)
         subscribe = request.user.follower.create(author=user_author)
         serializer = self.get_serializer(subscribe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -157,7 +159,8 @@ class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
         self.request.user.follower.filter(author=instance).delete()
 
 
-class Shopping_listViews(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
+class Shopping_listViews(generics.RetrieveDestroyAPIView,
+                         generics.ListCreateAPIView):
     """Добавление и удаление рецептов из листа покупок."""
     serializer_class = Shopping_cartSerializer
     permission_classes = (IsAuthenticated,)
@@ -175,17 +178,17 @@ class Shopping_listViews(generics.RetrieveDestroyAPIView, generics.ListCreateAPI
 
     def perform_destroy(self, instance):
         '''Удаление рецепта из листа покупок.'''
-        self.request.user.Shopping_list.filter(recipe=self.get_object()).delete()
+        self.request.user.Shopping_list.filter(
+            recipe=self.get_object()).delete()
 
 
-
-class SubscriptionsViews(generics.ListAPIView): 
+class SubscriptionsViews(generics.ListAPIView):
     '''Вьюсет для отображения подписок пользователя'''
     queryset = Follow.objects.all()
     serializer_class = SubscribeSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = PageNumberPagination 
-    
+    pagination_class = PageNumberPagination
+
     @action(detail=False, methods=['GET'])
     def subscriptions(self, request):
         '''Метод для отображения всех подписок пользователя.'''

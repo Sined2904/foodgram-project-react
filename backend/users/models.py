@@ -1,9 +1,6 @@
-from django.db import models
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 
 
@@ -16,16 +13,19 @@ class User(AbstractUser):
     """Кастомная модель пользователей."""
     first_name = models.CharField('Имя', max_length=50, blank=False)
     last_name = models.CharField('Фамилия', max_length=150, blank=False)
-    email = models.EmailField('email', max_length=254, 
+    email = models.EmailField('email', max_length=254,
                               blank=False, unique=True
-    )
+                              )
     ROLE_CHOICES = (
         ('user', 'user'),
         ('admin', 'admin'),
     )
     role = models.CharField('роль',
-        max_length=25, choices=ROLE_CHOICES, default='user',
-    )
+                            max_length=25,
+                            choices=ROLE_CHOICES,
+                            default='user',
+                            )
+
     @property
     def is_admin(self):
         """Проверка, является ли пользователь админом или суперюзером."""
