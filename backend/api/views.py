@@ -93,7 +93,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit',).annotate(
             amount=Sum('amount')).order_by()
-                        )
+        )
         if shopping_cart:
             indent = 20
             page.setFont("Arial", 24)
