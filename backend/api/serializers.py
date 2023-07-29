@@ -150,7 +150,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 recipe=instance,
                 ingredient=get_object_or_404(Ingredient, id=ingredient['id']),
                 amount=data['amount']
-                ).save()
+            ).save()
         return instance
 
     def get_is_favorited(self, obj):
@@ -158,8 +158,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         if request.user.is_anonymous:
             return False
         return Favourites.objects.filter(
-            recipe=obj, user=request.user
-            ).exists()
+            recipe=obj, user=request.user).exists()
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context.get('request')
