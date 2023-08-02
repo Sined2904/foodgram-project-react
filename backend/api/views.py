@@ -22,10 +22,13 @@ from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
                           TagSerializer)
+from .utils import create_shopping_list, RecipeFilter
+from rest_framework import filters
 
 
 class TagViewSet(viewsets.ModelViewSet):
     '''Вьюсет для Тегов.'''
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -34,6 +37,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 class IngredientViewSet(viewsets.ModelViewSet):
     '''Вьюсет для Ингредиентов.'''
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -42,6 +46,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 class Favourites(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
     '''Вью для добавления и удаления рецепта в избранное.'''
+
     queryset = Recipe.objects.all()
     serializer_class = FavouriteSerializer
     permission_classes = (IsAuthenticated,)
@@ -64,12 +69,13 @@ class Favourites(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     '''Вьюсет для рецептов.'''
+
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthenticated, IsAuthororAdmin)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('author', 'tags')
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_class = RecipeFilter
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
@@ -84,10 +90,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def download_shopping_cart(self, request):
         '''Метод для скачивания листа покупок.'''
-        buffer = io.BytesIO()
-        page = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
-        x_position, y_position = 50, 800
         shopping_cart = (IngredientInRecipe.objects.filter(
             recipe__shopping_list__user=request.user).values(
             'ingredient__name',
@@ -95,24 +97,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount=Sum('amount')).order_by()
         )
         if shopping_cart:
-            indent = 20
-            page.setFont("Arial", 24)
-            page.drawString(x_position, y_position, 'Cписок покупок:')
-            page.setFont("Arial", 12)
-            for index, recipe in enumerate(shopping_cart, start=1):
-                page.drawString(
-                    x_position, y_position - indent,
-                    f'{index}. {recipe["ingredient__name"]} - '
-                    f'{recipe["amount"]} '
-                    f'{recipe["ingredient__measurement_unit"]}.')
-                y_position -= 15
-                if y_position <= 50:
-                    page.showPage()
-                    y_position = 800
-            page.save()
-            buffer.seek(0)
-            return FileResponse(
-                buffer, as_attachment=True, filename='Shopping_cart.pdf')
+            create_shopping_list(shopping_cart)
+        buffer = io.BytesIO()
+        page = canvas.Canvas(buffer)
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+        x_position, y_position = 50, 800
         page.setFont("Arial", 24)
         page.drawString(
             x_position,
@@ -126,6 +115,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
     """Подписка и отписка от пользователя."""
+
     serializer_class = SubscribeSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -162,6 +152,7 @@ class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
 class Shopping_listViews(generics.RetrieveDestroyAPIView,
                          generics.ListCreateAPIView):
     """Добавление и удаление рецептов из листа покупок."""
+
     serializer_class = Shopping_cartSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -184,6 +175,7 @@ class Shopping_listViews(generics.RetrieveDestroyAPIView,
 
 class SubscriptionsViews(generics.ListAPIView):
     '''Вьюсет для отображения подписок пользователя'''
+
     queryset = Follow.objects.all()
     serializer_class = SubscribeSerializer
     permission_classes = (IsAuthenticated,)

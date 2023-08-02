@@ -2,9 +2,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = '0z9mvz@p2yuys+0g4xlhr6+wx9gqhjo=bv3r*&a+=k9=7o*qxv'
+SECRET_KEY = os.getenv('SECRET_KEY', '1234')
 
-DEBUG = True
+DEBUG = 'False'
 
 AUTH_USER_MODEL = "users.User"
 
@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'import_export',
     'debug_toolbar',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -64,9 +65,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -74,9 +72,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -94,12 +89,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
+LANGUAGE_CODE = 'ru'
 
-LANGUAGE_CODE = 'ru-ru'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -107,9 +99,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -140,7 +129,6 @@ DJOSER = {
     },
     'SERIALIZERS': {
         'user': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-        'user_create': 'api.serializers.CreateUserSerializer'},
+        'current_user': 'api.serializers.UserSerializer'},
     'HIDE_USERS': False,
 }

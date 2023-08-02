@@ -2,11 +2,13 @@ from django.contrib import admin
 
 from .models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                      Shopping_list, Tag)
+from .forms import IngredientForm
 
 
 class IngredientInRecipeInLime(admin.TabularInline):
     model = IngredientInRecipe
-    extra = 1
+    extra = 0
+    formset = IngredientForm
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -21,7 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @admin.display(description='Добавили в избранное')
     def get_followers_count(self, obj):
-        return obj.followers.count()
+        return obj.favourites.count()
 
 
 class TagAdmin(admin.ModelAdmin):

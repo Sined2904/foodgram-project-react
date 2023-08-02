@@ -80,10 +80,16 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='ingredient.name')
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit')
+    amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientInRecipe
         fields = ('id', 'name', 'amount', 'measurement_unit')
+
+    def validate_amount(self, amount):
+        if amount < 1:
+            raise serializers.ValidationError('Количество ингредиента'
+                                              ' не может быть 0!')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -134,6 +140,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    cooking_time = serializers.IntegerField()
 
     class Meta:
         model = Recipe
@@ -168,6 +175,36 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return Shopping_list.objects.filter(
             recipe=obj, user=request.user
         ).exists()
+
+    def validate_cooking_time(self, attrs):
+        if attrs['cooking_time'] < 1:
+            raise serializers.ValidationError('Время готовки не может'
+                                              'быть меньше 1 минуты')
+
+    def validate_tags(self, tags):
+        if len(tags) < 1:
+            raise serializers.ValidationError('Добавьте хотя бы 1 тег')
+        tag_in_recipe = []
+        for tag in tags:
+            if tag in tag_in_recipe:
+                raise serializers.ValidationError(
+                    'Каждый тег указывается один раз!')
+            tag_in_recipe.append(tag)
+        return tags
+
+    def validate_ingredients(self, ingredients):
+        if len(ingredients) < 1:
+            raise serializers.ValidationError('Добавьте хотя бы 1 ингредиент!')
+        ingredient_in_recipe = []
+        for ingredient in ingredients:
+            if int(ingredient.get('amount')) < 1:
+                raise serializers.ValidationError(
+                    'Количество ингредиента не может быть 0!')
+            if ingredient in ingredient_in_recipe:
+                raise serializers.ValidationError(
+                    'Каждый ингредиент указывается один раз!')
+            ingredient_in_recipe.append(ingredient)
+        return ingredients
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
