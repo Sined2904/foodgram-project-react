@@ -81,7 +81,7 @@ class Recipe(models.Model):
         validators=[
             validators.MinValueValidator(1, message='Минимум 1 минута'),
             validators.MaxValueValidator(720, message='Максимум 720 минут')]
-            )
+    )
 
     class Meta:
         verbose_name = 'Рецепт'
@@ -118,13 +118,13 @@ class IngredientInRecipe(models.Model):
             validators.MinValueValidator(
                 1,
                 message='Минимум 1 грамм'
-                ),
+            ),
             validators.MaxValueValidator(
                 10000,
                 message='Максимум 10000 грамм'
-                )
-                ]
             )
+        ]
+    )
 
     class Meta:
         verbose_name = 'Ингридиент в рецепте '
