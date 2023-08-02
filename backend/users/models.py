@@ -58,7 +58,7 @@ class Follow(models.Model):
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_prevent_self_follow",
                 check=~models.Q(user=models.F("author"))
-                                )
+            )
         ]
 
     def __str__(self):
