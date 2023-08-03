@@ -1,10 +1,11 @@
 import io
-from reportlab.pdfgen import canvas
+
+import django_filters
+from django.http import FileResponse
+from recipes.models import Recipe, Tag
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from django.http import FileResponse
-import django_filters
-from recipes.models import Recipe, Tag
+from reportlab.pdfgen import canvas
 
 
 def create_shopping_list(shopping_cart):

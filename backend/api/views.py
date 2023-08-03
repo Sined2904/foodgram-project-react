@@ -122,8 +122,7 @@ class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
     def get_object(self):
         '''Получение id пользователя из URL.'''
         user_id = self.kwargs['user_id']
-        user = get_object_or_404(User, id=user_id)
-        return user
+        return get_object_or_404(User, id=user_id)
 
     def get_queryset(self):
         '''Проверка наличие подписки.'''
