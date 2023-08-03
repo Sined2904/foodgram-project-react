@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
+#noqa
 from users.models import Follow, User
 from recipes.models import (Favourites, Ingredient, IngredientInRecipe, Recipe,
                             Shopping_list, Tag)

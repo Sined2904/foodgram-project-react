@@ -1,6 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-
+#noqa
 from .views import (Favourites, IngredientViewSet, RecipeViewSet,
                     Shopping_listViews, Subscribe, SubscriptionsViews,
                     TagViewSet)
