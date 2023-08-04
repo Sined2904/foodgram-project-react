@@ -8,7 +8,7 @@ DEBUG = False
 
 AUTH_USER_MODEL = "users.User"
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'host.docker.internal']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'fgyapr.ddns.net']
 
 INSTALLED_APPS = [
     'recipes.apps.RecipesConfig',
@@ -67,8 +67,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+        'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
