@@ -1,11 +1,9 @@
-import os
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import UniqueConstraint
 
 
-MAX_LENGTH_LIMIT = os.getenv('MAX_LENGTH_LIMIT', default=150)
+MAX_LENGTH_LIMIT = 150
 
 
 class User(AbstractUser):

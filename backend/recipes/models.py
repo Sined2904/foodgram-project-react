@@ -1,5 +1,3 @@
-import os
-
 from colorfield.fields import ColorField
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -8,7 +6,7 @@ from django.core import validators
 from users.models import User
 
 
-MAX_LENGTH_LIMIT = os.getenv('MAX_LENGTH_LIMIT', default=150)
+MAX_LENGTH_LIMIT = 150
 
 
 class Tag(models.Model):
