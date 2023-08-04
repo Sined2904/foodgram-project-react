@@ -111,6 +111,7 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+CSRF_TRUSTED_ORIGINS = ["https://fgyapr.ddns.net"]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
