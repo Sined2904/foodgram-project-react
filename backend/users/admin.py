@@ -4,7 +4,7 @@ from .models import User, Follow
 
 
 class UserAdmin(admin.ModelAdmin):
-    
+
     list_display = (
         'id',
         'username',
