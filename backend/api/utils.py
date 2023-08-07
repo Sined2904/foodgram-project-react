@@ -2,7 +2,7 @@ import io
 
 import django_filters
 from django.http import FileResponse
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe, Tag, Ingredient
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -60,3 +60,12 @@ class RecipeFilter(django_filters.FilterSet):
         if value and self.request.user.is_authenticated:
             return queryset.filter(shopping_list__user=self.request.user)
         return queryset
+
+
+class IngredientFilter(django_filters.rest_framework.FilterSet):
+    """Фильтр для ингредиентов."""
+    name = django_filters.filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)

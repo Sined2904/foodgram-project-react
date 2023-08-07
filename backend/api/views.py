@@ -21,9 +21,8 @@ from .permissions import IsAdminOrReadOnly, IsAuthororAdmin
 from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
-                          TagSerializer)
-from .utils import create_shopping_list, RecipeFilter
-from rest_framework import filters
+                          TagSerializer, RecipeShortSerializer)
+from .utils import create_shopping_list, RecipeFilter, IngredientFilter
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -42,8 +41,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ('name',)
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = IngredientFilter
 
 
 class Favourites(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
@@ -76,15 +75,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthenticated | IsAuthororAdmin)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
+    filter_backends = (DjangoFilterBackend,)
     filterset_fields = ['tags', ]
     filter_class = RecipeFilter
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
         if self.action == 'create':
-            print(1)
             return CreateRecipeSerializer
+        elif self.action in ['favorite', 'shopping_cart', ]:
+            return RecipeShortSerializer
         return RecipeSerializer
 
     def perform_create(self, serializer):

@@ -222,6 +222,18 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return ingredients
 
 
+class RecipeShortSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = (
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        )
+
+
 class SubscribeSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(
