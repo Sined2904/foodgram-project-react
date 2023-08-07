@@ -1,7 +1,7 @@
 import io
 
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated | IsAuthororAdmin)
+    permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
@@ -98,8 +98,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit',).annotate(
             amount=Sum('amount')).order_by()
         )
-        if shopping_cart:
-            return create_shopping_list(shopping_cart)
+        print(shopping_cart)
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
@@ -111,9 +110,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'Cписок покупок пуст!')
         page.save()
         buffer.seek(0)
-        response = HttpResponse(content=buffer, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="cart.txt"'
-        return response
+        return FileResponse(
+            buffer, as_attachment=True, filename='Shopping_cart.pdf')
 
 
 class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
