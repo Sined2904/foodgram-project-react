@@ -1,7 +1,7 @@
 import io
 
 from django.db.models.aggregates import Sum
-from django.http import FileResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
@@ -111,8 +111,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'Cписок покупок пуст!')
         page.save()
         buffer.seek(0)
-        return FileResponse(
-            buffer, as_attachment=True, filename='Shopping_cart.pdf')
+        response = HttpResponse(content=buffer, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename="cart.txt"'
+        return response
 
 
 class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
