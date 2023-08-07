@@ -3,7 +3,6 @@ import io
 from django.db.models.aggregates import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
                             Tag)
 from reportlab.pdfbase import pdfmetrics
