@@ -1,6 +1,6 @@
 import io
 
-import django_filters
+from django_filters.rest_framework import FilterSet, filters
 from django.http import FileResponse
 from recipes.models import Recipe, Tag
 from reportlab.pdfbase import pdfmetrics
@@ -34,16 +34,16 @@ def create_shopping_list(shopping_cart):
                         filename='Shopping_cart.pdf')
 
 
-class RecipeFilter(django_filters.FilterSet):
-    tags = django_filters.filters.ModelMultipleChoiceFilter(
+class RecipeFilter(FilterSet):
+    tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all(),
     )
-    is_favorited = django_filters.filters.BooleanFilter(
+    is_favorited = filters.BooleanFilter(
         method='get_is_favorited'
     )
-    is_in_shopping_cart = django_filters.filters.BooleanFilter(
+    is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart'
     )
 
