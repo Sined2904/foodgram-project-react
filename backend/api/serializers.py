@@ -174,7 +174,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         IngredientInRecipe.objects.filter(recipe=instance).delete()
-        instance = super().update(instance, validated_data)
+        super().update(instance, validated_data)
         for data in ingredients:
             ingredient = data['ingredient']
             IngredientInRecipe(
