@@ -139,13 +139,11 @@ class Model_user_recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Пользователь',
-        related_name='%(class)s'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт в избранном',
-        related_name='%(class)s'
     )
 
     class Meta:
