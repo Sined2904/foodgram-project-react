@@ -81,7 +81,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
-        if self.action == 'create':
+        if self.action == 'create' or 'update':
             return CreateRecipeSerializer
         return RecipeSerializer
 
