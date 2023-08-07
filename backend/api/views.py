@@ -99,7 +99,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount=Sum('amount')).order_by()
         )
         if shopping_cart:
-            create_shopping_list(shopping_cart)
+            return create_shopping_list(shopping_cart)
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
