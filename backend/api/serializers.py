@@ -170,7 +170,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 amount=data['amount']
             ).save()
         return instance
-    
+
     def update(self, instance, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
