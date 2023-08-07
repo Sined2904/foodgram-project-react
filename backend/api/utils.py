@@ -35,10 +35,10 @@ def create_shopping_list(shopping_cart):
 
 
 class RecipeFilter(django_filters.FilterSet):
-    tags = django_filters.filters.AllValuesMultipleFilter(
-        queryset=Tag.objects.all(),
+    tags = django_filters.filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
-        to_field_name='slug'
+        to_field_name='slug',
+        queryset=Tag.objects.all(),
     )
     is_favorited = django_filters.filters.BooleanFilter(
         method='get_is_favorited'
