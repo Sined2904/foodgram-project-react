@@ -163,13 +163,13 @@ class Shopping_listViews(generics.RetrieveDestroyAPIView,
     def create(self, request, *args, **kwargs):
         '''Добавление в список покупок.'''
         recipe = self.get_object()
-        request.user.Shopping_list.create(recipe=recipe)
+        request.user.shopping_list.create(recipe=recipe)
         serializer = self.get_serializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def perform_destroy(self, instance):
         '''Удаление рецепта из листа покупок.'''
-        self.request.user.Shopping_list.filter(
+        self.request.user.shopping_list.filter(
             recipe=self.get_object()).delete()
 
 
