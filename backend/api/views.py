@@ -17,12 +17,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import Follow, User
 
-from .permissions import IsAdminOrReadOnly, IsAuthororAdmin
+from .permissions import IsAdminOrReadOnly
 from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
                           TagSerializer)
-from .utils import create_shopping_list, RecipeFilter
+from .utils import RecipeFilter
 from rest_framework import filters
 
 

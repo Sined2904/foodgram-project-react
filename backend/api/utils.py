@@ -1,38 +1,5 @@
-import io
-
 from django_filters.rest_framework import FilterSet, filters
-from django.http import FileResponse
 from recipes.models import Recipe, Tag
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
-
-
-def create_shopping_list(shopping_cart):
-    buffer = io.BytesIO()
-    page = canvas.Canvas(buffer)
-    pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
-    x_position, y_position = 50, 800
-    page.setFont("Arial", 24)
-    page.drawString(x_position, y_position, 'Cписок покупок:')
-    page.setFont("Arial", 12)
-    indent = 20
-    for index, recipe in enumerate(shopping_cart, start=1):
-        page.drawString(
-            x_position, y_position - indent,
-            f'{index}. {recipe["ingredient__name"]} - '
-            f'{recipe["amount"]} '
-            f'{recipe["ingredient__measurement_unit"]}.')
-        y_position -= 15
-        if y_position <= 50:
-            page.showPage()
-            y_position = 800
-    page.save()
-    print(page)
-    buffer.seek(0)
-    return FileResponse(buffer,
-                        as_attachment=True,
-                        filename='Shopping_cart.pdf')
 
 
 class RecipeFilter(FilterSet):
