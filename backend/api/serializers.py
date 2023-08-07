@@ -143,7 +143,6 @@ class Base64ImageField(serializers.ImageField):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
-
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
@@ -164,6 +163,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                   'image', 'text', 'cooking_time']
 
     def create(self, validated_data):
+        print(validated_data)
         ingredients = validated_data.pop('ingredients')
         instance = super().create(validated_data)
         for data in ingredients:
@@ -186,15 +186,15 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-
         return Shopping_list.objects.filter(
             recipe=obj, user=request.user
         ).exists()
 
     def validate_cooking_time(self, attrs):
-        if attrs['cooking_time'] < 1:
+        if attrs < 1:
             raise serializers.ValidationError('Время готовки не может'
                                               'быть меньше 1 минуты')
+        return attrs
 
     def validate_tags(self, tags):
         if len(tags) < 1:
