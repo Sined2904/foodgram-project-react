@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated | IsAuthororAdmin)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
@@ -98,7 +98,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit',).annotate(
             amount=Sum('amount')).order_by()
         )
-        print(shopping_cart)
+        if shopping_cart:
+            create_shopping_list(shopping_cart)
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
