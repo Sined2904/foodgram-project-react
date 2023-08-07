@@ -75,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated | IsAuthororAdmin)
+    permission_classes = (IsAuthenticated, )
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
@@ -98,13 +98,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit',).annotate(
             amount=Sum('amount')).order_by()
         )
-        if shopping_cart:
-            create_shopping_list(shopping_cart)
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
         pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
         x_position, y_position = 50, 800
         page.setFont("Arial", 24)
+        if shopping_cart:
+            page.drawString(x_position, y_position, 'Cписок покупок:')
+            page.setFont("Arial", 12)
+            indent = 20
+            for index, recipe in enumerate(shopping_cart, start=1):
+                page.drawString(
+                    x_position, y_position - indent,
+                    f'{index}. {recipe["ingredient__name"]} - '
+                    f'{recipe["amount"]} '
+                    f'{recipe["ingredient__measurement_unit"]}.')
+                y_position -= 15
+                if y_position <= 50:
+                    page.showPage()
+                    y_position = 800
+            page.save()
+            buffer.seek(0)
+            return FileResponse(buffer,
+                                as_attachment=True,
+                                filename='Shopping_cart.pdf')
         page.drawString(
             x_position,
             y_position,

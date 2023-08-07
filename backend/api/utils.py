@@ -28,6 +28,7 @@ def create_shopping_list(shopping_cart):
             page.showPage()
             y_position = 800
     page.save()
+    print(page)
     buffer.seek(0)
     return FileResponse(buffer,
                         as_attachment=True,
