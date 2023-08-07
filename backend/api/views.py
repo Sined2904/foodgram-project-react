@@ -75,8 +75,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated, IsAuthororAdmin)
-    filter_backends = (filters.SearchFilter,)
+    permission_classes = (IsAuthenticated | IsAuthororAdmin)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
     filter_class = RecipeFilter
 
     def get_serializer_class(self):
