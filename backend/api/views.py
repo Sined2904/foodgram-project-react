@@ -74,10 +74,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_queryset = RecipeFilter
     pagination_class = LimitOffsetPagination
     permission_classes = (IsAuthenticated | IsAuthororAdmin)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
