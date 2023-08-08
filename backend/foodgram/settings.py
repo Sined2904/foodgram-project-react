@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'import_export',
     'debug_toolbar',
     'colorfield',
+    'reportlab',
 ]
 
 MIDDLEWARE = [
