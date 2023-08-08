@@ -13,7 +13,7 @@ from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from users.models import Follow, User
 
@@ -40,7 +40,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly, )
     pagination_class = None
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filter_fields = ['name', ]
@@ -82,9 +82,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
-        if self.action == 'create' or 'update':
-            return CreateRecipeSerializer
-        return RecipeSerializer
+        if self.request.method in SAFE_METHODS:
+            return RecipeSerializer
+        return CreateRecipeSerializer
 
     def perform_create(self, serializer):
         '''Добавление автора рецепта, пользователя который сделал запрос.'''
