@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from users.models import Follow, User
 
-from .permissions import IsAdminOrReadOnly, IsAuthororAdmin
+from .permissions import IsAdminOrReadOnly, IsAuthororAdminorRead
 from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
@@ -78,7 +78,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = RecipeFilter
     pagination_class = LimitOffsetPagination
-    permission_classes = (IsAuthenticated | IsAuthororAdmin)
+    permission_classes = (IsAuthororAdminorRead, )
 
     def get_serializer_class(self):
         '''Переопределение сериализатора для POST запроса.'''
