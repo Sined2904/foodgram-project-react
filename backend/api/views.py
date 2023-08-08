@@ -11,8 +11,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import (LimitOffsetPagination,
-                                       PageNumberPagination)
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from users.models import Follow, User
@@ -198,7 +197,7 @@ class SubscriptionsViews(generics.ListAPIView):
     queryset = Follow.objects.all()
     serializer_class = SubscribeSerializer
     permission_classes = (IsAuthenticated,)
-    pagination_class = PageNumberPagination
+    pagination_class = LimitOffsetPagination
 
     @action(detail=False, methods=['GET'])
     def subscriptions(self, request):
