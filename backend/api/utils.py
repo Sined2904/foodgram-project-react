@@ -1,5 +1,5 @@
 from django_filters.rest_framework import filters
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe, Tag, User
 
 
 class RecipeFilter(filters.FilterSet):
@@ -14,6 +14,7 @@ class RecipeFilter(filters.FilterSet):
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart'
     )
+    author = filters.ModelChoiceFilter(queryset=User.objects.all())
 
     class Meta:
         model = Recipe
