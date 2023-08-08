@@ -1,9 +1,14 @@
+import io
+
 from django.db.models.aggregates import Sum
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
                             Tag)
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import (LimitOffsetPagination,
@@ -87,22 +92,44 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def download_shopping_cart(self, request):
         '''Метод для скачивания листа покупок.'''
-        ingredients = (
-            IngredientInRecipe.objects.filter(
-                recipe__in_cart__user=request.user,
-            )
-            .values('ingredient__name', 'ingredient__measurement_unit')
-            .annotate(ingredient_amount=Sum('amount'))
+        shopping_cart = (IngredientInRecipe.objects.filter(
+            recipe__shopping_list__user=request.user).values(
+            'ingredient__name',
+            'ingredient__measurement_unit',).annotate(
+            amount=Sum('amount')).order_by()
         )
-        data = []
-        for ingredient in ingredients:
-            name = ingredient['ingredient__name']
-            measurement_unit = ingredient['ingredient__measurement_unit']
-            amount = ingredient['ingredient_amount']
-            data.append(f'{name}: {amount}, {measurement_unit}\n')
-        response = HttpResponse(content=data, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="cart.txt"'
-        return response
+        buffer = io.BytesIO()
+        page = canvas.Canvas(buffer)
+        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+        x_position, y_position = 50, 800
+        page.setFont("Arial", 24)
+        if shopping_cart:
+            page.drawString(x_position, y_position, 'Cписок покупок:')
+            page.setFont("Arial", 12)
+            indent = 20
+            for index, recipe in enumerate(shopping_cart, start=1):
+                page.drawString(
+                    x_position, y_position - indent,
+                    f'{index}. {recipe["ingredient__name"]} - '
+                    f'{recipe["amount"]} '
+                    f'{recipe["ingredient__measurement_unit"]}.')
+                y_position -= 15
+                if y_position <= 50:
+                    page.showPage()
+                    y_position = 800
+            page.save()
+            buffer.seek(0)
+            return FileResponse(buffer,
+                                as_attachment=True,
+                                filename='Shopping_cart.pdf')
+        page.drawString(
+            x_position,
+            y_position,
+            'Cписок покупок пуст!')
+        page.save()
+        buffer.seek(0)
+        return FileResponse(
+            buffer, as_attachment=True, filename='Shopping_cart.pdf')
 
 
 class Subscribe(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
