@@ -21,7 +21,7 @@ from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
                           TagSerializer)
-from .utils import RecipeFilter
+from .utils import RecipeFilter, IngredientFilter
 from rest_framework import filters
 
 
@@ -41,9 +41,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (IsAdminOrReadOnly, )
     pagination_class = None
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filter_fields = ['name', ]
-    search_fields = ['^name', ]
+    filter_backends = [DjangoFilterBackend, ]
+    filterset_class = IngredientFilter
 
 
 class Favourites(generics.RetrieveDestroyAPIView, generics.ListCreateAPIView):
