@@ -4,15 +4,14 @@ from django.db.models.aggregates import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Ingredient, IngredientInRecipe, Recipe,
-                            Tag)
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from users.models import Follow, User
 
@@ -21,8 +20,7 @@ from .serializers import (CreateRecipeSerializer, FavouriteSerializer,
                           IngredientSerializer, RecipeSerializer,
                           Shopping_cartSerializer, SubscribeSerializer,
                           TagSerializer)
-from .utils import RecipeFilter, IngredientFilter
-from rest_framework import filters
+from .utils import IngredientFilter, RecipeFilter
 
 
 class TagViewSet(viewsets.ModelViewSet):
