@@ -97,7 +97,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('Arial', 'arial.ttf'))
+        pdfmetrics.registerFont(TTFont('Arial', 'Arial.ttf'))
         x_position, y_position = 50, 800
         page.setFont("Arial", 24)
         if shopping_cart:
