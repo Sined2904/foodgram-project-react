@@ -97,12 +97,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         buffer = io.BytesIO()
         page = canvas.Canvas(buffer)
-        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
+        pdfmetrics.registerFont(TTFont('FreeSans', 'FreeSans.ttf'))
         x_position, y_position = 50, 800
-        page.setFont("Vera", 24)
+        page.setFont("FreeSans", 24)
         if shopping_cart:
             page.drawString(x_position, y_position, 'Cписок покупок:')
-            page.setFont("Vera", 12)
+            page.setFont("FreeSans", 12)
             indent = 20
             for index, recipe in enumerate(shopping_cart, start=1):
                 page.drawString(
