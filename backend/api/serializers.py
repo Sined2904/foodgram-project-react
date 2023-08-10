@@ -1,4 +1,5 @@
 import base64
+import re
 
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -228,6 +229,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                     'Каждый ингредиент указывается один раз!')
             ingredient_in_recipe.append(ingredient)
         return ingredients
+
+    def validate_name(self, name):
+        if re.search('[a-zA-Zа-яА-ЯёЁ]', name) is None:
+            raise serializers.ValidationError(
+                    'В названии должны быть буквы')
+        return name
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
