@@ -232,8 +232,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     def validate_name(self, name):
         if re.search('[a-zA-Zа-яА-ЯёЁ]', name) is None:
-            raise serializers.ValidationError(
-                    'В названии должны быть буквы')
+            raise serializers.ValidationError('В названии должны быть буквы')
         return name
 
 
